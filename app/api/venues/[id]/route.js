@@ -10,7 +10,7 @@ function isValidObjectId(id) {
 export async function GET(req, { params }) {
   try {
     await dbConnect();
-    const { id } = params;
+    const { id } = await params;
 
     // ❌ Invalid MongoDB ObjectId
     if (!isValidObjectId(id)) {
@@ -33,7 +33,7 @@ export async function GET(req, { params }) {
 export async function PUT(req, { params }) {
   try {
     await dbConnect();
-    const { id } = params;
+    const { id } = await params;
 
     // ❌ Invalid MongoDB ObjectId
     if (!isValidObjectId(id)) {
@@ -84,7 +84,7 @@ export async function PUT(req, { params }) {
 export async function DELETE(req, { params }) {
   try {
     await dbConnect();
-    const { id } = params;
+    const { id } = await params;
 
     // ❌ Invalid ObjectId
     if (!isValidObjectId(id)) {

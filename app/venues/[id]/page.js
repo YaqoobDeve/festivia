@@ -11,7 +11,11 @@ export default function VenueDetailShow() {
   const [venue, setVenue] = useState(null);
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState(false);
+  const [reviewText, setReviewText] = useState("");
+const [reviewRating, setReviewRating] = useState(0);
+const [submittingReview, setSubmittingReview] = useState(false);
 
+  
   const fallback = {
     title: "No Title",
     description: "No description provided",
@@ -68,6 +72,39 @@ export default function VenueDetailShow() {
       console.error("Delete error", err);
     }
   };
+  
+const handleReviewSubmit = async (e) => {
+  e.preventDefault();
+  setSubmittingReview(true);
+
+  try {
+    const res = await fetch(`/api/venues/${id}/reviews`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        rating: Number(reviewRating),
+        comment: reviewText.trim(),
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Failed to submit review");
+      return;
+    }
+
+    alert("Review submitted!");
+    setReviewRating(0);
+    setReviewText("");
+
+  } catch (err) {
+    console.error("Review submit error:", err);
+  } finally {
+    setSubmittingReview(false);
+  }
+};
+
 
   const handleBook = async () => setBooking(true);
 
@@ -218,13 +255,36 @@ if (!loading && !venue) {
             </div>
           </div>
         </aside>
-        <div className="review text-black flex border-solid border" >
-          <div className="justify-center items-center"><h3>Enter a review</h3></div>          
-          <label htmlFor="rating">Rating</label>
-          <input type="range" name="Rating" />
-          <textarea name="Review comment" id="Comment" placeholder="Enter a Comment">Comment</textarea>
-          <div><button type="submit">Submit</button></div>
-        </div>
+       <form onSubmit={handleReviewSubmit} className="review text-black flex flex-col gap-3 p-4 border rounded-xl shadow">
+  <h3 className="text-xl font-semibold">Enter a Review</h3>
+
+  <label className="font-medium">Rating</label>
+  <input
+    type="range"
+    min="0"
+    max="5"
+    step="0.1"
+    value={reviewRating}
+    onChange={(e) => setReviewRating(e.target.value)}
+  />
+  <p>Rating: {reviewRating}</p>
+
+  <textarea
+    value={reviewText}
+    onChange={(e) => setReviewText(e.target.value)}
+    placeholder="Enter your comment"
+    className="p-2 border rounded"
+  />
+
+  <button
+    type="submit"
+    disabled={submittingReview}
+    className="px-4 py-2 bg-rose-600 text-white rounded-lg"
+  >
+    {submittingReview ? "Submitting..." : "Submit"}
+  </button>
+</form>
+
       </div>
     </main>
   );
