@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+  import { ToastContainer, toast } from 'react-toastify';
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import Loader from "@/app/components/Loader";
@@ -76,8 +77,28 @@ const [submittingReview, setSubmittingReview] = useState(false);
 const handleReviewSubmit = async (e) => {
   e.preventDefault();
   setSubmittingReview(true);
-
   try {
+    // CLIENT-SIDE VALIDATION
+// require rating (explicit null check) and comment
+if (reviewRating <= 0) {
+  toast.error("Please select a rating greater than 0");
+  setSubmittingReview(false);
+  return;
+}
+
+
+if (reviewRating < 0 || reviewRating > 5) {
+  toast.error("Rating must be between 0 and 5");
+  setSubmittingReview(false);
+  return;
+}
+
+if (!reviewText || !reviewText.trim()) {
+  toast.error("Please enter a comment");
+  setSubmittingReview(false);
+  return;
+}
+
     const res = await fetch(`/api/venues/${id}/reviews`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -94,7 +115,7 @@ const handleReviewSubmit = async (e) => {
       return;
     }
 
-    alert("Review submitted!");
+    toast.success("Review submitted!");
     setReviewRating(0);
     setReviewText("");
 
@@ -125,6 +146,7 @@ if (!loading && !venue) {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-rose-50 via-white to-rose-50 font-[Poppins] py-12 px-6">
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-8">
         {/* Left / Main column */}
         <section className="lg:col-span-2 space-y-6">
@@ -265,7 +287,7 @@ if (!loading && !venue) {
     max="5"
     step="0.1"
     value={reviewRating}
-    onChange={(e) => setReviewRating(e.target.value)}
+   onChange={(e) => setReviewRating(Number(e.target.value))}
   />
   <p>Rating: {reviewRating}</p>
 

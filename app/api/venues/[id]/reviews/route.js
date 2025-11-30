@@ -1,32 +1,35 @@
 import dbConnect from "@/lib/dbConnect";
 import Listing from "@/models/listing";
+import Review from "@/models/review";
 
 export async function POST(req, { params }) {
   try {
     await dbConnect();
+
     const { id } = await params;
     const { rating, comment } = await req.json();
 
-    if (!rating || !comment) {
-      return Response.json({ error: "Rating and comment are required" }, { status: 400 });
-    }
+    // 1️⃣ Create a review document
+    const newReview = await Review.create({
+      rating,
+      comment,
+    });
 
+    // 2️⃣ Push ONLY the review._id into listing
     const venue = await Listing.findById(id);
+
     if (!venue) {
       return Response.json({ error: "Venue not found" }, { status: 404 });
     }
 
-    const review = { rating, comment, date: new Date() };
-
-    venue.reviews = venue.reviews || [];
-    venue.reviews.push(review);
+    venue.reviews.push(newReview._id); // ✅ FIXED HERE
 
     await venue.save();
 
-    return Response.json({ message: "Review added", review }, { status: 201 });
+    return Response.json(newReview, { status: 201 });
 
-  } catch (err) {
-    console.error("Review POST error:", err);
-    return Response.json({ error: "Failed to add review" }, { status: 500 });
+  } catch (error) {
+    console.error("Review POST error:", error);
+    return Response.json({ error: error.message }, { status: 500 });
   }
 }
