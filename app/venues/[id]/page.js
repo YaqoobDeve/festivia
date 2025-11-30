@@ -306,6 +306,26 @@ if (!loading && !venue) {
     {submittingReview ? "Submitting..." : "Submit"}
   </button>
 </form>
+<div ><h4 className="text-black">all reviews yahan pe hain</h4>
+<div>
+  <h4 className="text-black mb-2">All Reviews</h4>
+
+  <div className="flex flex-col gap-3">
+    {venue.reviews && venue.reviews.length > 0 ? (
+      venue.reviews.map((review) => (
+        <div key={review._id} className="p-3 border rounded">
+          <p className="font-semibold">⭐ {review.rating}</p>
+          <p>{review.comment}</p>
+        </div>
+      ))
+    ) : (
+      <p>No reviews yet.</p>
+    )}
+  </div>
+</div>
+
+
+</div>
 
       </div>
     </main>
