@@ -1,11 +1,11 @@
-"use client"
-import { SessionProvider } from "next-auth/react"
-export default function AuthProvider({
-  childern,
-}) {
+"use client";
+
+import { SessionProvider } from "next-auth/react";
+
+export default function AuthProvider({ children }) {
   return (
-    <SessionProvider >
-      <childern/>
+    <SessionProvider>
+      {children}
     </SessionProvider>
-  )
+  );
 }

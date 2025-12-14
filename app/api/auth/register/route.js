@@ -16,7 +16,7 @@ try{
     }
     await dbConnect()
     const existingUser =await User.findOne({email})
-    if(!existingUser){
+    if(existingUser){
         return NextResponse.json(
             {error:"Email is already registered"},
             {status:"400"}

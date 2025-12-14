@@ -5,8 +5,9 @@ import { getToken } from "next-auth/jwt";
 const PUBLIC_ROUTES = [
   "/sign-in",
   "/sign-up",
-  "/maintenance",
+  "/api/auth",
 ];
+
 
 export async function middleware(req) {
   const { pathname, origin } = req.nextUrl;
@@ -21,9 +22,10 @@ export async function middleware(req) {
   }
 
   // 2️⃣ Allow public routes
-  if (PUBLIC_ROUTES.some(route => pathname.startsWith(route))) {
-    return NextResponse.next();
-  }
+if (PUBLIC_ROUTES.some(route => pathname.startsWith(route))) {
+  return NextResponse.next();
+}
+
 
   // 3️⃣ SYSTEM CHECK (DB health)
   try {
