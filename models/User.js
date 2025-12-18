@@ -1,21 +1,28 @@
 import mongoose, { mongo } from "mongoose";
-import bcrypt from "bcryptjs"
 const userSchema = new mongoose.Schema(
     {
         email: { type: String, required: true,unique:true },
-        Username: { type: String, required: false },
+        username: {  type: String, required: true,unique:true},
         password: { type: String, required: true },
+        isVerified:{
+            type:Boolean,
+            default: false
+        },
+        isAdmin:{
+            type:Boolean,
+            default :false
+        },
+        forgotPasswordToken: String,
+        forgotPasswordTokenExpiry: Date,
+        verifyToken: String,
+        verifyTokenExpiry: Date
+    
     },{
         timestamps:true
     }
 );
 
-userSchema.pre("save",async function (next) {
-    if(this.isModified("password")){
-        this.password = await bcrypt.hash(this.password,10)
-    }
-    next();
-});
+
 const User = mongoose.models?.User || mongoose.model("User",userSchema);
 
 export default User;
